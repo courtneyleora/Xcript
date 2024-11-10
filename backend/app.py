@@ -1,34 +1,40 @@
-from flask import Flask 
-from flask_sqlalchemy import SQLAlchemy 
-
-# Create a Flask application instance
+from flask import Flask, request, jsonify
+# Import UserDatabase from UserDB
+from UserDB import UserDatabase
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
+# Initialize the database connection (you can adjust these parameters as needed)
+db = UserDatabase('localhost', 'user', 'postgres', 'cocopop', 10203)
 
-# Configure the SQLAlchemy part of the app instance
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:cocopop@localhost/user'
-
-# Create the SQLAlchemy db instance
-db = SQLAlchemy(app)
-
-
-# Create an event model 
-class Event(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    userName = db.Column(db.String(120), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
     
-    # string rep of itself
-    def __repr__(self):
-        return f"Event:{self.userName}"
+    user = db.validate_user(email, password)
+    
+    if user:
+        return jsonify({"message": "Login successful", "username": user['username']}), 200
+    else:
+        return jsonify({"message": "Invalid email or password"}), 401
+    
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    # Check if user already exists
+    user = db.validate_user(email, password)
+    if user:
+        return jsonify({"message": "User already exists"}), 400
+    
+    # Create a new user
+    new_user_id = db.generate_new_user_id()  # Add a method in UserDatabase to generate a unique ID
+    db.create_user(new_user_id, password, email)
+    return jsonify({"message": "User created successfully"}), 201
 
-
-# Define a route for the root URL
-@app.route('/')
-def hello():
-    # Return a simple response
-    return 'Hello World!'
-
-# Run the application
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
