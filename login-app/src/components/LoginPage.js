@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -6,6 +7,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSignup, setIsSignup] = useState(false);
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // Basic regex for email validation
@@ -48,7 +50,7 @@ function LoginPage() {
       const data = await response.json();
       if (response.ok) {
         alert('Login successful!');
-        // Handle successful login (e.g., redirect, store token, etc.)
+        navigate('/profile-setup'); // Redirect to profile setup page
       } else {
         setError(data.message || 'Login failed');
       }
