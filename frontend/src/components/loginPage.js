@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+import './loginPage.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -49,8 +49,7 @@ function LoginPage() {
 
       const data = await response.json();
       if (response.ok) {
-        alert('Login successful!');
-        navigate('/profile-setup'); // Redirect to profile setup page
+        navigate('/user-stats', { state: { user: data.user } });
       } else {
         setError(data.message || 'Login failed');
       }
