@@ -5,6 +5,7 @@ import './loginPage.css';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ function LoginPage() {
 
       const data = await response.json();
       if (response.ok) {
-        navigate('/user-stats', { state: { user: data.user } });
+        navigate('/landing', { state: { user: data.user } });
       } else {
         setError(data.message || 'Login failed');
       }
@@ -71,13 +72,13 @@ function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       });
 
       const data = await response.json();
       if (response.ok) {
         alert('Sign-Up successful! You can now log in.');
-        setIsSignup(false); // Switch to login form after successful sign-up
+        navigate('/user-stats', { state: { user: { user_id: data.user_id, username, email } } });
       } else {
         setError(data.message || 'Sign-Up failed');
       }
@@ -128,6 +129,16 @@ function LoginPage() {
       ) : (
         <form onSubmit={handleSignup} className="signup-form">
           <h2>Sign Up</h2>
+          <div className="form-group">
+            <label htmlFor="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
           <div className="form-group">
             <label htmlFor="email">Email:</label>
             <input

@@ -49,15 +49,6 @@ const UserStatForm = () => {
             const result = await response.json();
             if (response.ok) {
                 alert('User statistics added successfully!');
-                setFormData({
-                    heightFeet: '',
-                    heightInches: '',
-                    weight: '',
-                    age: '',
-                    illnesses: '',
-                    background: '',
-                    sex: ''
-                });
                 navigate('/landing'); // Navigate to the landing page
             } else {
                 alert(`Error: ${result.message}`);

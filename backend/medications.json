@@ -1,0 +1,43 @@
+[
+    {
+      "name": "Ibuprofen",
+      "dosage": 200,
+      "prescribed_frequency": "Every 6-8 hours",
+      "ingredient_list": "Ibuprofen, corn starch, microcrystalline cellulose",
+      "uses": "Relieves pain, reduces fever, and alleviates inflammation",
+      "side_effects": "Nausea, upset stomach, dizziness, rash"
+    },
+    {
+      "name": "Paracetamol",
+      "dosage": 500,
+      "prescribed_frequency": "Every 4-6 hours as needed",
+      "ingredient_list": "Paracetamol, povidone, stearic acid",
+      "uses": "Reduces fever and relieves mild to moderate pain",
+      "side_effects": "Nausea, liver damage with excessive use"
+    },
+    {
+      "name": "Amoxicillin",
+      "dosage": 250,
+      "prescribed_frequency": "Every 8 hours",
+      "ingredient_list": "Amoxicillin trihydrate, sodium starch glycolate",
+      "uses": "Treats bacterial infections like pneumonia and bronchitis",
+      "side_effects": "Diarrhea, nausea, allergic reactions, skin rash"
+    },
+    {
+      "name": "Metformin",
+      "dosage": 500,
+      "prescribed_frequency": "Twice a day with meals",
+      "ingredient_list": "Metformin hydrochloride, magnesium stearate",
+      "uses": "Manages blood sugar levels in type 2 diabetes",
+      "side_effects": "Diarrhea, nausea, stomach pain, lactic acidosis (rare)"
+    },
+    {
+      "name": "Lisinopril",
+      "dosage": 10,
+      "prescribed_frequency": "Once daily",
+      "ingredient_list": "Lisinopril dihydrate, mannitol",
+      "uses": "Treats high blood pressure and heart failure",
+      "side_effects": "Cough, dizziness, headache, fatigue"
+    }
+  ]
+  
