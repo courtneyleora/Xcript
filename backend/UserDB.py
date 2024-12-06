@@ -32,14 +32,13 @@ class UserDatabase:
             )''',
             '''
             CREATE TABLE IF NOT EXISTS user_stats (
-                user_id INT PRIMARY KEY REFERENCES users(id),
-                name VARCHAR(50),
-                age INT,
-                sex VARCHAR(10),
-                height FLOAT,
+                user_id SERIAL PRIMARY KEY,
+                height INT,
                 weight FLOAT,
+                age INT,
                 illnesses TEXT,
-                background TEXT
+                background TEXT,
+                sex VARCHAR(10)
             )''',
             '''
             CREATE TABLE IF NOT EXISTS medications (
@@ -59,38 +58,30 @@ class UserDatabase:
                 start_date DATE,
                 end_date DATE,
                 reminder_time TIME,
-                goals TEXT
+                goals TEXT,
+                taken_history JSON DEFAULT '[]'
             )''',
             '''
             CREATE TABLE IF NOT EXISTS educational_facts (
                 fact_id SERIAL PRIMARY KEY,
                 medication_id INT REFERENCES medications(medication_id),
                 fact_detail TEXT
+            )''',
+            '''
+            CREATE TABLE IF NOT EXISTS reminders (
+                reminder_id SERIAL PRIMARY KEY,
+                prescription_id INT REFERENCES prescriptions(prescription_id),
+                reminder_time TIME NOT NULL,
+                is_active BOOLEAN DEFAULT TRUE
             )'''
         ]
         for script in table_scripts:
             self.cur.execute(script)
         self.conn.commit()
 
-    def validate_user(self, email, password):
-        try:
-            query = '''
-            SELECT * FROM users
-            WHERE email = %s AND password = %s
-            '''
-            self.cur.execute(query, (email, password))
-            user = self.cur.fetchone()
-            return user
-        except Exception as e:
-            print(f"Error validating user: {e}")
-            return None
-
     def create_user(self, username, password, email):
+        insert_script = 'INSERT INTO users (username, password, email) VALUES (%s, %s, %s) RETURNING id'
         try:
-            insert_script = '''
-            INSERT INTO users (username, password, email)
-            VALUES (%s, %s, %s) RETURNING id
-            '''
             self.cur.execute(insert_script, (username, password, email))
             user_id = self.cur.fetchone()[0]
             self.conn.commit()
@@ -100,17 +91,72 @@ class UserDatabase:
             print(f"Error creating user: {e}")
             return None
 
-    def add_user_stats(self, user_id, name, age, sex, height, weight, illnesses, background):
-        try:
-            insert_script = '''
-            INSERT INTO user_stats (user_id, name, age, sex, height, weight, illnesses, background)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            '''
-            self.cur.execute(insert_script, (user_id, name, age, sex, height, weight, illnesses, background))
-            self.conn.commit()
-        except Exception as e:
-            self.conn.rollback()
-            print(f"Error adding user stats: {e}")
+    def validate_user(self, email, password):
+        select_script = 'SELECT * FROM users WHERE email = %s AND password = %s'
+        self.cur.execute(select_script, (email, password))
+        user = self.cur.fetchone()
+        return user
+
+    def add_user_stats(self, user_id, height, weight, age, illnesses, background, sex):
+        insert_script = 'INSERT INTO user_stats (user_id, height, weight, age, illnesses, background, sex) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+        self.cur.execute(insert_script, (user_id, height, weight, age, illnesses, background, sex))
+        self.conn.commit()
+
+    def read_all_user_stats(self):
+        self.cur.execute('SELECT * FROM user_stats')
+        records = self.cur.fetchall()
+        return records
+
+    def update_user_stats(self, user_id, height, weight, age, illnesses, background, sex):
+        update_script = 'UPDATE user_stats SET height = %s, weight = %s, age = %s, illnesses = %s, background = %s, sex = %s WHERE user_id = %s'
+        self.cur.execute(update_script, (height, weight, age, illnesses, background, sex, user_id))
+        self.conn.commit()
+
+    def delete_user_stats(self, user_id):
+        delete_script = 'DELETE FROM user_stats WHERE user_id = %s'
+        self.cur.execute(delete_script, (user_id,))
+        self.conn.commit()
+
+    def user_stats_exist(self, user_id):
+        select_script = 'SELECT 1 FROM user_stats WHERE user_id = %s'
+        self.cur.execute(select_script, (user_id,))
+        return self.cur.fetchone() is not None
+
+    def add_reminder(self, prescription_id, reminder_time):
+        insert_script = 'INSERT INTO reminders (prescription_id, reminder_time) VALUES (%s, %s)'
+        self.cur.execute(insert_script, (prescription_id, reminder_time))
+        self.conn.commit()
+
+    def get_medication_history(self, user_id):
+        select_script = '''
+        SELECT m.name, m.dosage, m.prescribed_frequency, m.ingredient_list, m.uses, m.side_effects
+        FROM medications m
+        JOIN prescriptions p ON m.medication_id = p.medication_id
+        WHERE p.user_id = %s
+        '''
+        self.cur.execute(select_script, (user_id,))
+        records = self.cur.fetchall()
+        return records
+
+    def update_medication(self, prescription_id, medication_id, start_date, end_date, reminder_time, goals):
+        update_script = '''
+        UPDATE prescriptions
+        SET medication_id = %s, start_date = %s, end_date = %s, reminder_time = %s, goals = %s
+        WHERE prescription_id = %s
+        '''
+        self.cur.execute(update_script, (medication_id, start_date, end_date, reminder_time, goals, prescription_id))
+        self.conn.commit()
+
+    def delete_medication(self, prescription_id):
+        delete_script = 'DELETE FROM prescriptions WHERE prescription_id = %s'
+        self.cur.execute(delete_script, (prescription_id,))
+        self.conn.commit()
+
+    def get_all_medications(self):
+        select_script = 'SELECT * FROM medications'
+        self.cur.execute(select_script)
+        records = self.cur.fetchall()
+        return records
 
     def close(self):
         if self.cur:
