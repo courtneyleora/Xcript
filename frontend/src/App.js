@@ -12,8 +12,6 @@ import EditMedication from './components/EditMedication';
 import MedicationDetails from './components/MedicationDetails';
 
 function App() {
-  const userId = 1; // Replace with the actual user ID
-
   return (
     <Router>
       <div className="App">
@@ -23,7 +21,7 @@ function App() {
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/user-settings" element={<UserSettings />} />
           <Route path="/about" element={<About />} />
-          <Route path="/medication-history" element={<MedicationHistory userId={userId} />} />
+          <Route path="/medication-history" element={<MedicationHistory />} />
           <Route path="/set-reminder" element={<SetReminder />} />
           <Route path="/edit-medication" element={<EditMedication />} />
           <Route path="/medication-details" element={<MedicationDetails />} />
