@@ -1,0 +1,44 @@
+.medication-history-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.medication-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.medication-history-table th,
+.medication-history-table td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.medication-history-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.medication-history-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.medication-history-table tr:hover {
+    background-color: #f1f1f1;
+}
